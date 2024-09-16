@@ -17,7 +17,7 @@ This code is based on processing steps outlined in [Arnold et al. 2021](https://
 
 3. After running the `RUN ONCE` portion, make sure that you copy all of the raw FC .txt files in the directory titled `data_raw` and that any label .csv files are entered into the directory titled `data_labels`. When the files are in the appropriate directories, proceed with the rest of the code.
 
--  Note: The label files should be CSVs. The first column should be titled `well` and will include the labels that were used in the FC pre-processing tab that are present in the raw FC .txt file. The second column should be `sample` and will include the actual name of the sample that you would like to rename the heading with. A template and sample file are included on GitHub, and the template can stay in the `data_labels` folder as long as you don't have raw data with the same file name.
+-  Note: The label files should be CSVs. The first column should be titled `well` and will include the labels that were used in the FC pre-processing tab that are shown as headings in the raw FC .txt file. The second column should be titled `sample` and will include the actual name of the sample that you would like to rename the heading with. A template and sample file are included on GitHub, and the template can stay in the `data_labels` folder as long as you don't have raw data with the same file name.
 
 
 4. The `INPUTS REQUIRED` section will require updating every time there is a new file. If you do not plan to use label files, make sure that the line of code that reads `csv <- 0` is not commented out. When `csv == 0` the renaming function will not run. As a note, if you have a label file an error will come up in this section of code:
