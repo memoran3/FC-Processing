@@ -1,5 +1,5 @@
 # Processing Fluorcam data for Tcrit and T50
-### Written by Madeline Moran, last modified on 16Sept2024 by MM
+### Written by Madeline Moran, last updated on 7Nov2024 by MM
 
 ## Background
 This code is based on processing steps outlined in [Arnold et al. 2021](https://doi.org/10.1071/FP20344), refined by Owen Atkin's lab, then modified by Madeline Moran (referring to previous code and work done by Jessica Guo), this repository provides a workflow for automating detection of thermal limits in high-throughput chlorophyll imaging fluorescence. The final outputs include a CSV file with Date, Run, Sample ID, Tcrit, Tcrit standard error, T50, the upper and lower bounds used in the code (xlow, xhigh), and the threshold used to trim the raw FC data. There will also be a folder created with all of the plots for one run, the plot will include a the original raw FC curve, the trimmed curve, the breakpoint regression to cacluate Tcrit, and a green diamond indicating T50.
@@ -36,7 +36,7 @@ This warning does not interfere with the function working properly. The warning 
 
 
 ## Notes and plans for updates
-- T50 is only working well on curves that are very textbook perfect. It needs to be checked very carefully at this point in time before including in final data sets. Future updates will hopefully fix this problem, but as of now T50 has to be manually removed from the final data sets if the T-F0 curve is atypical.
+- A problem was found with the T50 portion of this code, results for it should not be used at this time. An updated version will be posted when the problem is fixed, as well as an updated note here in the README file.
 
 - If you run this code until `fn` is empty, then try to reset `fn` with the same or new data, it can sometimes run into problems and may not read the new files correctly (it will say that `fn` is empty when it shouldn't be). If this happens, just clear the global environment and restart from the `RUN ONCE` section. It should work fine after that.
 
