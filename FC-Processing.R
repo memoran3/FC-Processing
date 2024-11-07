@@ -1,16 +1,17 @@
 #### Tcrit hot chlorophyll fluorescence calculator script ####
 ### Originally from file "Tcrit for Atkin Lab.R"
 ### Modified on 7/28/24 by MM
-### Last updated on 9/6/24 by MM
+### Last updated on 7/11/24 by MM
 
 #### RUN ONCE ####
 library(segmented)
 #library(ggplot2)
 library(readr)
+library(here)
 
 
-# Set working directory to where the raw FC kinetic files live
-setwd("C:/Users/madel/Documents/ASU/Hultine Lab/fluorcam_processing-main")
+# Set working directory to where the R project file lives
+setwd(here())
 
 # Creating directories if they don't already exist
 if(!dir.exists("data_raw/")) {
@@ -50,6 +51,8 @@ rename <- function(data, csv){  # csv needs well and leafID column
 
 
 #### START RUNNING SUBSEQUENT FILES HERE ####
+
+# IMPORTANT NOTE (11/7/24): T50 results are currently unreliabe and should not be used. An updated version of this code will be posted when the problem is fixed
 
 
 # List of .txt file names that have not yet been processed (files not listed in the data_processed directory)
@@ -218,7 +221,7 @@ for (i in (2:ncol(fluorscale))) {
     # Filling out output table
     output[(i-1),4] <- tcrit1
     output[(i-1),5] <- tcriterr1
-    output[(i-1),6] <- t50
+    output[(i-1),6] <- t50 # THIS PART NOT WORKING, DO NOT USE
   }, error = function(e) {cat("ERROR :",conditionMessage(e), "\n")})
 }
 
