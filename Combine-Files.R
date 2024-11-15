@@ -8,7 +8,7 @@ library(readr)
 
 
 # Set working directory to wherever the Tcrit Processed folder is
-wd <- here()
+wd <- paste0(here(),"/data_processed")
 
 # Set up output file name
 fn <- "/Mt Lemmon Tcrit combined 30 60 70.csv"
