@@ -6,7 +6,7 @@
 This code is based on processing steps outlined in [Arnold et al. 2021](https://doi.org/10.1071/FP20344), refined by Owen Atkin's lab, then modified by Madeline Moran (referring to previous code and work done by Jessica Guo and Madeline Moran). This repository provides a workflow for automating detection of thermal limits in high-throughput chlorophyll imaging fluorescence using a closed FluorCam and TR2000 thermoregulator (Photon System Instruments, Drásov, Czech Republic). The final outputs include a CSV file with Date, Run, Sample ID, Tcrit, Tcrit standard error, T50, the upper and lower bounds used in the code (xlow, xhigh), and the threshold used to trim the raw FC data (maxthreshold). This code will also create a folder with all of the plots for one run, and the plots will include the original raw FC curve, the trimmed curve, the breakpoint regression to cacluate Tcrit, and a green square indicating T50.
 
 ## How to use "FC-Processing.R"
-1.  Download `Tcrit Processing 2024.R` from GitHub and move to an empty directory where only FluorCam data is processed. This code will create new directories here when necessary, so it is better to start with a folder that can be completely dedicated to this data processing.
+1.  Download `Tcrit Processing 2024.R` from GitHub and move to an empty directory where only FluorCam data is processed. This code will create new directories here when necessary, so it is better to start with a folder that can be completely dedicated to this data processing. Open these files in a new R project.
 
 
 2. This code is separated into two main sections:
@@ -25,6 +25,8 @@ This code is based on processing steps outlined in [Arnold et al. 2021](https://
 
 
 5. This code runs one raw FluorCam output file at a time. After completing one FluorCam file, start again at the `START RUNNING SUBSEQUENT FILES HERE` and continue to repeat that until all of the .txt files have been processed.
+
+6. After running the files once, look at the plots to see if there are any regressions that look irregular. If there are, you can re-run those raw FluorCam files and modify the xhigh, xlow, and/or maxthreshold values accordingly to get a better regression fit. At this point there is not a way to isolate the samples that need to be re-run, so the whole file will have to be re-run and the good breakpoints from each modified run can be manually added to the final spreadsheet.
 
 
 ### Notes and plans for updates
