@@ -1,16 +1,16 @@
 #### Tcrit hot chlorophyll fluorescence calculator script ####
 ### Originally from file "Tcrit for Atkin Lab.R"
 ### Modified on 7/28/24 by MM
-### Last updated on 7/11/24 by MM
+### Last updated on 6/13/25 by MM
 
 #### RUN ONCE ####
 library(segmented)
-#library(ggplot2)
 library(readr)
 library(here)
+library(rlang)
 
 
-# Set working directory to where the R project file lives
+# Set working directory to where this R project lives
 setwd(here())
 
 # Creating directories if they don't already exist
@@ -33,12 +33,12 @@ rescale <- function(x){ (x - min(x))/(max(x) - min(x))}
 # Rename function
 rename <- function(data, csv){  # csv needs well and leafID column
   
-  newnames <- c("temp")
+  newnames <- c("temp") # initial vector set-up
   
-  for (i in 2:ncol(data)){
-    for (j in 1:(ncol(data)-1)){
-      if (colnames(data)[i] == csv[j,1]){
-        newnames <- c(newnames, as.character(csv[j,2]))
+  for (i in 2:ncol(data)){ # iterating through data columns after temp
+    for (j in 1:nrow(csv)){ # iterating through label rows (should = ncol(data) - 1)
+      if (colnames(data)[i] == csv[j,1]){ # if heading matches label, rename it
+        newnames <- c(newnames, as_string(csv[j,2]))
       }
     }
   }
@@ -50,10 +50,9 @@ rename <- function(data, csv){  # csv needs well and leafID column
 
 
 
+# setwd(here())
+
 #### START RUNNING SUBSEQUENT FILES HERE ####
-
-# IMPORTANT NOTE (11/7/24): T50 results are currently unreliabe and should not be used. An updated version of this code will be posted when the problem is fixed
-
 
 # List of .txt file names that have not yet been processed (files not listed in the data_processed directory)
 fn <- setdiff(list.files("data_raw/"), list.files("data_processed/"))
@@ -63,9 +62,9 @@ print(fn[1]) # to see date and run information better
 #### INPUTS REQUIRED ####
 xlow         <- 30       # low end ramp temperature removing initial values (30 as default)
 xhigh        <- 60       # high end ramp temperature removing highest values (60 as default)
-maxthreshold <- 0.7      # value between 0 and 1 for fluorescence (0.9 as default)
-date         <- 20240605 # the date of the experiment YEAR/MONTH/DAY
-run          <- "PM"     # the run number for the date
+maxthreshold <- 0.9      # value between 0 and 1 for fluorescence (0.9 as default)
+date         <- 20250611 # the date of the experiment YEAR/MONTH/DAY
+run          <- "2"     # the run number for the date
 csv          <- read.csv(paste0("./data_labels/",strsplit(fn[1], ".TXT"),".csv"))
 # csv        <- 0  # use this line of code instead of the previous one if there's no label file
 
@@ -103,13 +102,13 @@ for (column in 2:(nsamples + 1)) {
 
 
 # Renaming csv if there's a label file
-if (csv != 0){ # throws a warning message if csv is a file, don't worry about it
+if (class(csv) == "data.frame"){
   fluorscale <- rename(fluorscale, csv)
 }
 
 # head(fluorscale)
 
-# Plotting the rescaled data
+# Making the output data frame
 output <- matrix(NA, nsamples, 9)
 output[,1] <- date
 output[,2] <- run
@@ -118,10 +117,12 @@ output[,7] <- xlow
 output[,8] <- xhigh
 output[,9] <- maxthreshold
 
+# Creating the output folder for the file being processed
 if(!dir.exists(paste0("data_processed/", fn[1]))) {
   dir.create(paste0("data_processed/", fn[1]))
 }
 
+# Plotting the rescaled data
 par(mfrow = c(4,4), mar = c(1,4,1,1))
 for (i in (2:ncol(fluorscale))) {
   tryCatch({
@@ -180,6 +181,7 @@ for (i in (2:ncol(fluorscale))) {
     
     
     # Saving PNGs for later, comment out to the next comment if you don't want this
+#    png(filename = paste0("./data_processed/", fn[1],"/", colnames(fluorscale)[i],".png"),
     png(filename = paste0("./data_processed/", fn[1],"/", colnames(fluorscale)[i],".png"),
         width = 800,
         height = 500,
@@ -221,7 +223,7 @@ for (i in (2:ncol(fluorscale))) {
     # Filling out output table
     output[(i-1),4] <- tcrit1
     output[(i-1),5] <- tcriterr1
-    output[(i-1),6] <- t50 # THIS PART NOT WORKING, DO NOT USE
+    output[(i-1),6] <- t50
   }, error = function(e) {cat("ERROR :",conditionMessage(e), "\n")})
 }
 
@@ -235,4 +237,3 @@ colnames(output) <- c("Date", "Run", "LeafID", "Tcrit", "StdErr", "T50", "xlow",
 # Write the output as a .csv file to be called into another script
 wd <- getwd()
 write.csv(output, paste0(wd,"/data_processed/",strsplit(fn[1], ".TXT"),".csv"), row.names = F)
-
