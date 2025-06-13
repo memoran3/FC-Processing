@@ -31,7 +31,7 @@ This code is based on processing steps outlined in [Arnold et al. 2021](https://
 
 ### Notes and plans for updates
 - A problem was found with the T50 portion of this code, results for it should not be used at this time. An updated version will be posted when the problem is fixed, as well as an updated note here in the README file.
-- UPDATE 6/13/25: T50 works on the code for perfect curves where Tmax is captured by the FluorCam, but should be verified before using in any analysis. Do not use the T50 values if there is noise around the 50% fluorescence mark or if Tmax is not captured.
+- UPDATE 6/13/25: T50 works on the code for good curves where Tmax is captured by the FluorCam and noise is limited, but should be verified before using in any analysis. Do not use the T50 values if there is noise around the 50% fluorescence mark or if Tmax is not captured.
 
 - If you run this code until `fn` is empty, then try to reset `fn` with the same or new data, it can sometimes run into problems and may not read the new files correctly (it will say that `fn` is empty when it shouldn't be). If this happens, just clear the global environment and restart from the `RUN ONCE` section. It should work fine after that.
 
