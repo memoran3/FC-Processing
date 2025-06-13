@@ -181,7 +181,6 @@ for (i in (2:ncol(fluorscale))) {
     
     
     # Saving PNGs for later, comment out to the next comment if you don't want this
-#    png(filename = paste0("./data_processed/", fn[1],"/", colnames(fluorscale)[i],".png"),
     png(filename = paste0("./data_processed/", fn[1],"/", colnames(fluorscale)[i],".png"),
         width = 800,
         height = 500,
