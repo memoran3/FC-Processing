@@ -70,6 +70,7 @@ csv          <- read.csv(paste0("./data_labels/",strsplit(fn[1], ".TXT"),".csv")
 
 # Raw kinetic data
 fluor <- read.table(file = paste0("data_raw/",fn[1]), skip = 2, header = T, sep = "\t")
+ ## fluor <- read.table(file = paste0("data_raw/",fn[1]), skip = 2, header = T, sep = "\t", FileEncoding = 'latin1') if R has trouble reading in the degree C symbol in header 2
 fluor <- fluor[-1] # remove time stamp column
 colnames(fluor)[1] <- "temp" # rename temperature column
 
