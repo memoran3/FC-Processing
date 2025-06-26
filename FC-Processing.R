@@ -1,7 +1,7 @@
 #### Tcrit hot chlorophyll fluorescence calculator script ####
 ### Originally from file "Tcrit for Atkin Lab.R"
 ### Modified on 7/28/24 by MM
-### Last updated on 6/13/25 by MM
+### Last updated on 6/26/25 by MM
 
 #### RUN ONCE ####
 library(segmented)
@@ -28,7 +28,7 @@ if(!dir.exists("data_labels/")) {
 # CUSTOM FUNCTIONS
 
 # Function that rescales fluorescence values between 0 and 1
-rescale <- function(x){ (x - min(x))/(max(x) - min(x))}
+rescale <- function(x){ (x - min(x))/(max(x) - min(x))} # x is one column in raw FC data
 
 # Rename function
 rename <- function(data, csv){  # csv needs well and leafID column
@@ -48,9 +48,27 @@ rename <- function(data, csv){  # csv needs well and leafID column
   return(data)
 }
 
+# Condense function
+condense <- function(rawFC){ # rawFC is the raw FC dataframe
+  newDF <- data.frame(matrix(NA, (nrow(rawFC)/5), ncol(rawFC))) # condensed dataframe
+  
+  mod <- 0 # counter for rows
+  for (i in 1:ncol(rawFC)){ # iterating through columns
+    for (j in 1:120){ # iterating through rows
+      # averaging the 5 measurements per checkpoint
+      newDF[j,i] <- (rawFC[j+mod,i] + rawFC[j+mod+1,i] + rawFC[j+mod+2,i] + rawFC[j+mod+3,i] + rawFC[j+mod+4,i])/5 
+      mod <- mod+4 # increasing counter to the next group of measurements
+    }
+    mod <- 0
+  }
+  
+  colnames(newDF) <- colnames(rawFC)
+  
+  return(newDF)
+}
 
 
-# setwd(here())
+setwd(here())
 
 #### START RUNNING SUBSEQUENT FILES HERE ####
 
@@ -63,20 +81,21 @@ print(fn[1]) # to see date and run information better
 xlow         <- 30       # low end ramp temperature removing initial values (30 as default)
 xhigh        <- 60       # high end ramp temperature removing highest values (60 as default)
 maxthreshold <- 0.9      # value between 0 and 1 for fluorescence (0.9 as default)
-date         <- 20250611 # the date of the experiment YEAR/MONTH/DAY
-run          <- "2"     # the run number for the date
+date         <- 20250522 # the date of the experiment YEAR/MONTH/DAY
+run          <- "PM1"     # the run number for the date
 csv          <- read.csv(paste0("./data_labels/",strsplit(fn[1], ".TXT"),".csv"))
 # csv        <- 0  # use this line of code instead of the previous one if there's no label file
 
 # Raw kinetic data
-fluor <- read.table(file = paste0("data_raw/",fn[1]), skip = 2, header = T, sep = "\t")
- ## fluor <- read.table(file = paste0("data_raw/",fn[1]), skip = 2, header = T, sep = "\t", FileEncoding = 'latin1') if R has trouble reading in the degree C symbol in header 2
-fluor <- fluor[-1] # remove time stamp column
-colnames(fluor)[1] <- "temp" # rename temperature column
+rawFC <- read.table(file = paste0("data_raw/",fn[1]), skip = 2, header = T, sep = "\t")
+rawFC <- rawFC[-1] # remove time stamp column
+colnames(rawFC)[1] <- "temp" # rename temperature column
 
 
 # Checking headers
 # head(fluor)
+
+fluor <- condense(rawFC)
 
 
 # The number of leaf areas of interest specified in this run
@@ -158,7 +177,7 @@ for (i in (2:ncol(fluorscale))) {
     
     fitted_val1 <- fitted(seg_model1)
     breakmodel1 <- data.frame(Temperature = fluor_sub$temp, fluor_sub = fitted_val1)
-      
+    
     
     # plots with breakpoints
     plot(fluor_sub[,i] ~ temp, 
@@ -186,8 +205,8 @@ for (i in (2:ncol(fluorscale))) {
         width = 800,
         height = 500,
         units = "px")
-
-# Plots for PNG files
+    
+    # Plots for PNG files
     plot(fluorscale[,i] ~ temp,
          data = fluorscale,
          ylab = names(fluor_sub[i]),
@@ -217,9 +236,9 @@ for (i in (2:ncol(fluorscale))) {
     tcrittext1 <- paste("Tcrit =",tcrit1, "°C")
     t50text <- paste("T50 =",t50,"°C")
     legend("top", legend = c(tcrittext1, t50text), bty = "n")
-
+    
     dev.off()
-
+    
     # Filling out output table
     output[(i-1),4] <- tcrit1
     output[(i-1),5] <- tcriterr1
