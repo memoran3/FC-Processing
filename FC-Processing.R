@@ -236,7 +236,6 @@ for (i in (2:ncol(fluorscale))) {
           type = "l",
           col = "red",
           lwd = 2)
-    abline(h = 0.5, col = "grey", lty = 2)
     points(fluor_sub[which.min(abs(fluor_sub[,i] - 0.5)),i] ~ t50,
            pch = 22, 
            bg = "green",
