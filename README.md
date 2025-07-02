@@ -1,6 +1,6 @@
 # Processing Fluorcam data for Tcrit and T50
 ### Written by Madeline Moran
-#### last updated on June 13, 2025 by MM
+#### last updated on July 2, 2025 by MM
 
 ## Background
 This code is based on processing steps outlined in [Arnold et al. 2021](https://doi.org/10.1071/FP20344), refined by Owen Atkin's lab, then modified by Madeline Moran (referring to previous code and work done by Jessica Guo and Madeline Moran). This repository provides a workflow for automating detection of thermal limits in high-throughput chlorophyll imaging fluorescence using a closed FluorCam and TR2000 thermoregulator (Photon System Instruments, Drásov, Czech Republic). The final outputs include a CSV file with Date, Run, Sample ID, Tcrit, Tcrit standard error, T50, the upper and lower bounds used in the code (xlow, xhigh), and the threshold used to trim the raw FC data (maxthreshold). This code will also create a folder with all of the plots for one run, and the plots will include the original raw FC curve, the trimmed curve, the breakpoint regression to cacluate Tcrit, and a green square indicating T50.
