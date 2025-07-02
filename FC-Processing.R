@@ -182,7 +182,7 @@ for (i in (2:ncol(fluorscale))) {
     f1 <- breakmodel1$fluor_sub[nrow(breakmodel1)] # last point in the regression (y1)
     f2 <- breakmodel1$fluor_sub[nrow(breakmodel1)-1] # second to last point in the regression (y2)
     
-    t50 <- round(t1 + (((t2-t1)*(0.5-f1))/(f2-f1)), digits = 3)
+    t50 <- round(t1 + (((t2-t1)*(0.5-f1))/(f2-f1)), digits = 3) # derived from point-slope form equation
     
     
     # plots with breakpoints
