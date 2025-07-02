@@ -32,7 +32,7 @@ This code is based on processing steps outlined in [Arnold et al. 2021](https://
 ### Notes and plans for updates
 - A problem was found with the T50 portion of this code, results for it should not be used at this time. An updated version will be posted when the problem is fixed, as well as an updated note here in the README file.
 - UPDATE 6/13/25: T50 works on the code for good curves where Tmax is captured by the FluorCam and noise is limited, but should be verified before using in any analysis. Do not use the T50 values if there is noise around the 50% fluorescence mark or if Tmax is not captured.
-- UPDATE 7/2/25: T50 is now calculated using the regression line points (`breakmodel1`) rather than finding the value in the scaled data that is closest to 0.5. This should provide a more accurate measure of T50 than previous iterations of the code.
+- UPDATE 7/2/25: Tested a T50 calculation method based on the regression line rather than finding the point closest to 50% fluorescence, which works well when the regression line fits closely with the data. It does not work well when the data is noisy in the fast-rise phase. This code was left in, but commented out (lines 182-188) in case others want to try using it. If you want to use this method instead, comment out line 171 first.
 
 - If you run this code until `fn` is empty, then try to reset `fn` with the same or new data, it can sometimes run into problems and may not read the new files correctly (it will say that `fn` is empty when it shouldn't be). If this happens, just clear the global environment and restart from the `RUN ONCE` section. It should work fine after that.
 
