@@ -80,8 +80,8 @@ print(fn[1]) # to see date and run information better
 xlow         <- 30       # low end ramp temperature removing initial values (30 as default)
 xhigh        <- 60       # high end ramp temperature removing highest values (60 as default)
 maxthreshold <- 0.9      # value between 0 and 1 for fluorescence (0.9 as default)
-date         <- 20250702 # the date of the experiment YEAR/MONTH/DAY
-run          <- "2"     # the run number for the date
+date         <- 20250522 # the date of the experiment YEAR/MONTH/DAY
+run          <- "AM1"     # the run number for the date
 csv          <- read.csv(paste0("./data_labels/",strsplit(fn[1], ".TXT"),".csv"))
 # csv        <- 0  # use this line of code instead of the previous one if there's no label file
 
@@ -167,6 +167,9 @@ for (i in (2:ncol(fluorscale))) {
     fluor_sub <- subset(fluorscale, fluorscale$temp > xlow & fluorscale$temp < tempatthreshold)
     fluor_sub <- subset(fluor_sub, fluor_sub[,i] < maxthreshold)
     
+    # Find T50 -> temperature when fluorscale$i F0 is closest to 0.5
+    t50 <- fluor_sub[which.min(abs(fluor_sub[,i] - 0.5)),1]
+    
     # linear regression for the data, then finding the breakpoint
     response  <- fluor_sub[,i]
     model1     <- lm(response ~ temp, data = fluor_sub)
@@ -176,13 +179,13 @@ for (i in (2:ncol(fluorscale))) {
     breakmodel1 <- data.frame(Temperature = fluor_sub$temp, fluor_sub = fitted_val1) # regression lines for slow and fast rise phases
     
     
-    # calculate T50 using the breakmodel1 values
-    t1 <- breakmodel1$Temperature[nrow(breakmodel1)] # last point in the regression (x1)
-    t2 <- breakmodel1$Temperature[nrow(breakmodel1)-1] # second to last point in the regression (x2)
-    f1 <- breakmodel1$fluor_sub[nrow(breakmodel1)] # last point in the regression (y1)
-    f2 <- breakmodel1$fluor_sub[nrow(breakmodel1)-1] # second to last point in the regression (y2)
-    
-    t50 <- round(t1 + (((t2-t1)*(0.5-f1))/(f2-f1)), digits = 3) # derived from point-slope form equation
+    # # calculate T50 using the breakmodel1 values -> works for clean data, doesn't work for messy data -MM
+    # t1 <- breakmodel1$Temperature[nrow(breakmodel1)] # last point in the regression (x1)
+    # t2 <- breakmodel1$Temperature[nrow(breakmodel1)-1] # second to last point in the regression (x2)
+    # f1 <- breakmodel1$fluor_sub[nrow(breakmodel1)] # last point in the regression (y1)
+    # f2 <- breakmodel1$fluor_sub[nrow(breakmodel1)-1] # second to last point in the regression (y2)
+    # 
+    # t50 <- round(t1 + (((t2-t1)*(0.5-f1))/(f2-f1)), digits = 3) # derived from point-slope form equation
     
     
     # plots with breakpoints
@@ -233,6 +236,7 @@ for (i in (2:ncol(fluorscale))) {
           type = "l",
           col = "red",
           lwd = 2)
+    abline(h = 0.5, col = "grey", lty = 2)
     points(fluor_sub[which.min(abs(fluor_sub[,i] - 0.5)),i] ~ t50,
            pch = 22, 
            bg = "green",
