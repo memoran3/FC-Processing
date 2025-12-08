@@ -1,0 +1,10 @@
+name: shiny_app
+title:
+username: anarowley
+account: anarowley
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 16231214
+bundleId: 11270224
+url: https://anarowley.shinyapps.io/shiny_app/
+version: 1

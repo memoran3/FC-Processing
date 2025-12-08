@@ -9,7 +9,8 @@ library(readr)
 library(here)
 library(rlang)
 library(dplyr)
-
+# install.packages("rsconnect")
+library(rsconnect)
 
 # --------------------------------------
 # Loading functions from existing script 
@@ -19,6 +20,7 @@ library(dplyr)
 
 # Function that rescales fluorescence values between 0 and 1
 rescale <- function(x){ (x - min(x)) / (max(x) - min(x)) }
+
 
 # Rename function
 rename <- function(data, csv){  
@@ -77,9 +79,10 @@ ui <- fluidPage(
       
       hr(), #used to create horizontal breakpoints
       h4("2. Set Parameters"),
-      numericInput("xlow", "Lower temperature limit (xlow)", 30), #defining numeric inputs 
-      numericInput("xhigh", "Upper temperature limit (xhigh)", 60),
-      numericInput("maxthreshold", "Max fluorescence threshold", 0.9),
+      numericInput("xlow", "Lower temperature limit (xlow)", value =  30), #defining numeric inputs 
+      numericInput("xhigh", "Upper temperature limit (xhigh)", value = 60),
+      numericInput("maxthreshold", "Max fluorescence threshold", value = 0.9,
+                   step = 0.01), #moves at smaller increments
       
       hr(),
       h4("3. Navigate Samples"),
@@ -110,7 +113,8 @@ ui <- fluidPage(
 server <- function(input, output, session){
   
   # Load labels from project root
-  labels <- read.csv(here("data_labels", "Label-Template.csv"))
+  labels <- read.csv(here::here("data_labels", "Label-Template- copy.csv")) 
+  
   
   # Allow user to choose from list .TXT files from data_raw
   output$file_selector <- renderUI({
@@ -299,4 +303,3 @@ server <- function(input, output, session){
 
 # Run the application 
 shinyApp(ui = ui, server = server, options = list(launch.browser = TRUE)) #ran into issues opening app
-
