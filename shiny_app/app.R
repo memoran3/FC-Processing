@@ -113,7 +113,8 @@ ui <- fluidPage(
 server <- function(input, output, session){
   
   # Load labels from project root
-  labels <- read.csv(here::here("data_labels", "Label-Template- copy.csv")) 
+  labels <- read.csv(here::here("shiny_app", "data_labels", "Label-Template.csv"))
+  
   
   
   # Allow user to choose from list .TXT files from data_raw
