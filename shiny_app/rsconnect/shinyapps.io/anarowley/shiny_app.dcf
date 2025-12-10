@@ -4,7 +4,7 @@ username: anarowley
 account: anarowley
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
-appId: 16231214
-bundleId: 11270224
+appId: 16273027
+bundleId: 11294441
 url: https://anarowley.shinyapps.io/shiny_app/
 version: 1

@@ -75,7 +75,10 @@ ui <- fluidPage(
   sidebarLayout(
     sidebarPanel(
       h4("1. Select Data File"), #h4 is used to generate a heading 4-style heading
-      uiOutput("file_selector"),
+      fileInput(
+        inputId = "chosen_file",
+        label = "Upload a .TXT fluorcam file",
+        accept = ".TXT"),
       
       hr(), #used to create horizontal breakpoints
       h4("2. Set Parameters"),
@@ -113,33 +116,34 @@ ui <- fluidPage(
 server <- function(input, output, session){
   
   # Load labels from project root
-  labels <- read.csv(here::here("shiny_app", "data_labels", "Label-Template.csv"))
+  labels <- read.csv("data_labels/Label-Template.csv")
   
   
-  
-  # Allow user to choose from list .TXT files from data_raw
-  output$file_selector <- renderUI({
-    files <- list.files(here("data_raw"), pattern = "\\.TXT$", full.names = FALSE)
-    selectInput("chosen_file", "Choose a file:", choices = files)
-  })
   
   # Reactive: load + process selected file
   processed <- reactive({
     req(input$chosen_file)
     
-    filepath <- here("data_raw", input$chosen_file)
-    rawFC <- read.table(filepath, skip = 2, header = TRUE, sep = "\t")
-    rawFC <- rawFC[-1] # remove time column
+    # Load the uploaded file
+    rawFC <- read.table(
+      input$chosen_file$datapath,
+      skip = 2,
+      header = TRUE,
+      sep = "\t"
+    )
+    
+    rawFC <- rawFC[-1]  # remove time column
     colnames(rawFC)[1] <- "temp"
     
     condensed <- condense(rawFC)
     condensed <- subset(condensed, temp > input$xlow & temp < input$xhigh)
     
     fluorscale <- condensed
-    for(i in 2:ncol(condensed)) fluorscale[, i] <- rescale(condensed[, i])
+    for(i in 2:ncol(condensed)) {
+      fluorscale[, i] <- rescale(condensed[, i])
+    }
     
     fluorscale <- rename(fluorscale, labels)
-    
     fluorscale
   })
   
@@ -277,7 +281,7 @@ server <- function(input, output, session){
     res <- calc_results()
     
     new_row <- data.frame(
-      File = input$chosen_file,
+      File = input$chosen_file$name,
       Sample = colnames(df)[idx],
       Tcrit = res$tcrit,
       StdErr = res$stderr,
