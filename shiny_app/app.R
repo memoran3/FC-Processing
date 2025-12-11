@@ -238,7 +238,7 @@ server <- function(input, output, session){
       lwd = 1,
       col = "black",
       xlab = "Temperature (°C)",
-      ylab = "% Maximum Photosynthesis",
+      ylab = "% Maximum Fluorescence",
       main = paste("Sample:", sample)
     )
     
