@@ -2,3 +2,12 @@
 .Rhistory
 .RData
 .Ruserdata
+<<<<<<< HEAD
+=======
+.DS_Store
+.Rproj.user/
+.Rhistory
+.RData
+data_raw/
+DBG_2025.05.07_PM_F0_kin.csv
+>>>>>>> 7be86e6fea766efcfa93177809f94a21bf1a0a07

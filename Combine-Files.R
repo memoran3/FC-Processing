@@ -8,11 +8,10 @@ library(readr)
 
 
 # Set working directory to wherever the Tcrit Processed folder is
-wd <- "C:/Users/madel/Documents/ASU/Hultine Lab/fluorcam_processing-main/data_processed"
-setwd(wd)
+wd <- paste0(here(),"/data_processed")
 
 # Set up output file name
-fn <- "/Mt Lemmon Tcrit combined 30 60 70.csv"
+fn <- "/FCdataCombined.csv"
 
 
 # Binding all the csv files together

@@ -1,11 +1,12 @@
 # Processing Fluorcam data for Tcrit and T50
-### Written by Madeline Moran, last modified on 16Sept2024 by MM
+### Written by Madeline Moran
+#### last updated on July 2, 2025 by MM
 
 ## Background
-This code is based on processing steps outlined in [Arnold et al. 2021](https://doi.org/10.1071/FP20344), refined by Owen Atkin's lab, then modified by Madeline Moran (referring to previous code and work done by Jessica Guo), this repository provides a workflow for automating detection of thermal limits in high-throughput chlorophyll imaging fluorescence. The final outputs include a CSV file with Date, Run, Sample ID, Tcrit, Tcrit standard error, T50, the upper and lower bounds used in the code (xlow, xhigh), and the threshold used to trim the raw FC data. There will also be a folder created with all of the plots for one run, the plot will include a the original raw FC curve, the trimmed curve, the breakpoint regression to cacluate Tcrit, and a green diamond indicating T50.
+This code is based on processing steps outlined in [Arnold et al. 2021](https://doi.org/10.1071/FP20344), refined by Owen Atkin's lab, then modified by Madeline Moran (referring to previous code and work done by Jessica Guo and Madeline Moran). This repository provides a workflow for automating detection of thermal limits in high-throughput chlorophyll imaging fluorescence using a closed FluorCam and TR2000 thermoregulator (Photon System Instruments, Drásov, Czech Republic). The final outputs include a CSV file with Date, Run, Sample ID, Tcrit, Tcrit standard error, T50, the upper and lower bounds used in the code (xlow, xhigh), and the threshold used to trim the raw FC data (maxthreshold). This code will also create a folder with all of the plots for one run, and the plots will include the original raw FC curve, the trimmed curve, the breakpoint regression to cacluate Tcrit, and a green square indicating T50.
 
 ## How to use "FC-Processing.R"
-1.  Download `Tcrit Processing 2024.R` from GitHub or the DPEL Drive folder and move to an empty directory where only FluorCam data is processed. This code will create new directories here when necessary, so it is better to start with a folder that can be completely dedicated to this data processing.
+1.  Download `Tcrit Processing 2024.R` from GitHub and move to an empty directory where only FluorCam data is processed. This code will create new directories here when necessary, so it is better to start with a folder that can be completely dedicated to this data processing. Open these files in a new R project.
 
 
 2. This code is separated into two main sections:
@@ -20,23 +21,18 @@ This code is based on processing steps outlined in [Arnold et al. 2021](https://
 -  Note: The label files should be CSVs. The first column should be titled `well` and will include the labels that were used in the FC pre-processing tab that are shown as headings in the raw FC .txt file. The second column should be titled `sample` and will include the actual name of the sample that you would like to rename the heading with. A template and sample file are included on GitHub, and the template can stay in the `data_labels` folder as long as you don't have raw data with the same file name.
 
 
-4. The `INPUTS REQUIRED` section will require updating every time there is a new file. If you do not plan to use label files, make sure that the line of code that reads `csv <- 0` is not commented out. When `csv == 0` the renaming function will not run. As a note, if you have a label file an error will come up in this section of code:
-
-```{r}
-# Renaming csv if there's a label file
-if (csv != 0){ # throws a warning message if csv is a file, don't worry about it
-  fluorscale <- rename(fluorscale, csv)
-}
-```
-
-This warning does not interfere with the function working properly. The warning appears becaue it's looking for a numeric value and getting a string, which is what the code is intended to do. If `csv == 0` then no error will appear.
+4. The `INPUTS REQUIRED` section will require updating every time there is a new file. If you do not plan to use label files, make sure that line 68 (`csv <- read.csv(paste0("./data_labels/",strsplit(fn[1], ".TXT"),".csv")`) is commented out and line 69 (`csv <- 0`) is not.
 
 
-5. Running this code once will process one raw FC .txt file. After completing one file, start again at the `START RUNNING SUBSEQUENT FILES HERE` and continue to repeat that until all of the .txt files have been processed.
+5. This code runs one raw FluorCam output file at a time. After completing one FluorCam file, start again at the `START RUNNING SUBSEQUENT FILES HERE` and continue to repeat that until all of the .txt files have been processed.
+
+6. After running the files once, look at the plots to see if there are any regressions that look irregular. If there are, you can re-run those raw FluorCam files and modify the xhigh, xlow, and/or maxthreshold values accordingly to get a better regression fit. At this point there is not a way to isolate the samples that need to be re-run, so the whole file will have to be re-run and the good breakpoints from each modified run can be manually added to the final spreadsheet.
 
 
-## Notes and plans for updates
-- T50 is only working well on curves that are very textbook perfect. It needs to be checked very carefully at this point in time before including in final data sets. Future updates will hopefully fix this problem, but as of now T50 has to be manually removed from the final data sets if the T-F0 curve is atypical.
+### Notes and plans for updates
+- A problem was found with the T50 portion of this code, results for it should not be used at this time. An updated version will be posted when the problem is fixed, as well as an updated note here in the README file.
+- UPDATE 6/13/25: T50 works on the code for good curves where Tmax is captured by the FluorCam and noise is limited, but should be verified before using in any analysis. Do not use the T50 values if there is noise around the 50% fluorescence mark or if Tmax is not captured.
+- UPDATE 7/2/25: Tested a T50 calculation method based on the regression line rather than finding the point closest to 50% fluorescence, which works well when the regression line fits closely with the data. It does not work well when the data is noisy in the fast-rise phase. This code was left in, but commented out (lines 182-188) in case others want to try using it. If you want to use this method instead, comment out line 171 first.
 
 - If you run this code until `fn` is empty, then try to reset `fn` with the same or new data, it can sometimes run into problems and may not read the new files correctly (it will say that `fn` is empty when it shouldn't be). If this happens, just clear the global environment and restart from the `RUN ONCE` section. It should work fine after that.
 
