@@ -125,11 +125,11 @@ server <- function(input, output, session){
     req(input$chosen_file)
     
     # Load the uploaded file
-    rawFC <- read.table(
+    rawFC <- read_table( # switch from original read.table
       input$chosen_file$datapath,
       skip = 2,
-      header = TRUE,
-      sep = "\t"
+      # header = TRUE,
+      # sep = "\t"
     )
     
     rawFC <- rawFC[-1]  # remove time column
