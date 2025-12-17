@@ -7,7 +7,7 @@
 
 ## Background
 
-This code is base on modified FluorCam processing code by Madeline Moran (referring to previous code and work done by Owen Atkin's lab, Madeline Moran, and Jessice Guo). This repository provides a workflow for the Shiny App that makes the `FC-Processing.R` processing of Tcrit and T50 more efficient. This processing workflow uses the F0 method for Tcrit and T50 analysis.
+This code is base on modified FluorCam processing code by Madeline Moran (referring to previous code and work done by Owen Atkin's lab, Madeline Moran, and Jessice Guo). This repository provides a workflow for the Shiny App that makes the `FC-Processing.R` processing of Tcrit and T50 more efficient. This processing workflow uses the F0 method for Tcrit and T50 analysis. This app can be run locally by cloning or downloading this directory or via web browser [here](https://memoran.shinyapps.io/shiny_app/).
 
 The final output includes an interactive Shiny App where the user can select and upload data files, select a given sample, and modify the temperature boundries and max fluorescence threshold. The Shiny App will display the corresponding plot, including the original raw FC curve, the trimmed curve, the break-point regression to calculate Tcrit, and a green square deliniating T50. A reactive table will generate with the following columns:  
 
