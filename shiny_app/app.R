@@ -70,7 +70,8 @@ condense <- function(rawFC){
 # USER INTERFACE (UI) -----------------------------------------------------
 
 ui <- fluidPage(
-  titlePanel(HTML(paste0("FluorCam T",tags$sub("crit")," & T", tags$sub("50")," Data Processing App"))),
+  titlePanel(HTML(paste0("FluorCam T",tags$sub("crit")," & T", tags$sub("50")," Data Processing App")),
+             windowTitle = "FluorCam Tcrit & T50 Data Processing App"),
   
   sidebarLayout(
     sidebarPanel(
