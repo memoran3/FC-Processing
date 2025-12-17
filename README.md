@@ -1,15 +1,17 @@
 # Processing Fluorcam data for Tcrit and T50
 ### Written by Madeline Moran
-#### last updated on July 2, 2025 by MM
+#### last updated on December 17, 2025 by MM
+
+## IMPORTANT UPDATE:
+As of 12/17/25, there is now a Shiny app to help streamline this data processing workflow. To learn how to use the app, please follow the README in the `shiny_app` directory. Running the Shiny app can completely replace using this code manually, they do the same thing, and the app has a better user interface. Special thank you to Ana Rowley for creating this app, and to Jessica Guo for adivisng on it! Please contact me if you run into problems with the app.
 
 ## Background
 This code is based on processing steps outlined in [Arnold et al. 2021](https://doi.org/10.1071/FP20344), refined by Owen Atkin's lab, then modified by Madeline Moran (referring to previous code and work done by Jessica Guo and Madeline Moran). This repository provides a workflow for automating detection of thermal limits in high-throughput chlorophyll imaging fluorescence using a closed FluorCam and TR2000 thermoregulator (Photon System Instruments, Drásov, Czech Republic). The final outputs include a CSV file with Date, Run, Sample ID, Tcrit, Tcrit standard error, T50, the upper and lower bounds used in the code (xlow, xhigh), and the threshold used to trim the raw FC data (maxthreshold). This code will also create a folder with all of the plots for one run, and the plots will include the original raw FC curve, the trimmed curve, the breakpoint regression to cacluate Tcrit, and a green square indicating T50.
 
 ## How to use "FC-Processing.R"
-1.  Download `Tcrit Processing 2024.R` from GitHub and move to an empty directory where only FluorCam data is processed. This code will create new directories here when necessary, so it is better to start with a folder that can be completely dedicated to this data processing. Open these files in a new R project.
+1.  Clone or download this repository from GitHub and move all files to an empty directory where only FluorCam data is processed. Open the `FC-Processing.Rproj` file and open the `FC-Processing.R` (and `Combine-Files.R` if relevant) within that project. The processing code will create new directories wherever the project is saved when necessary, so it is more streamlined to start with a folder that can be completely dedicated to this data processing. 
 
-
-2. This code is separated into two main sections:
+2. `FC-Processing.R` is separated into two main sections:
 
 -  `RUN ONCE` section are for lines of code that need to be executed on the first run, but do not need to be ran again if processing more than one FC .txt file. This section includes library initializing, creating necessary directories if they don't already exist, and establishing two custom functions.
 
@@ -29,13 +31,6 @@ This code is based on processing steps outlined in [Arnold et al. 2021](https://
 6. After running the files once, look at the plots to see if there are any regressions that look irregular. If there are, you can re-run those raw FluorCam files and modify the xhigh, xlow, and/or maxthreshold values accordingly to get a better regression fit. At this point there is not a way to isolate the samples that need to be re-run, so the whole file will have to be re-run and the good breakpoints from each modified run can be manually added to the final spreadsheet.
 
 
-### Notes and plans for updates
-- A problem was found with the T50 portion of this code, results for it should not be used at this time. An updated version will be posted when the problem is fixed, as well as an updated note here in the README file.
-- UPDATE 6/13/25: T50 works on the code for good curves where Tmax is captured by the FluorCam and noise is limited, but should be verified before using in any analysis. Do not use the T50 values if there is noise around the 50% fluorescence mark or if Tmax is not captured.
-- UPDATE 7/2/25: Tested a T50 calculation method based on the regression line rather than finding the point closest to 50% fluorescence, which works well when the regression line fits closely with the data. It does not work well when the data is noisy in the fast-rise phase. This code was left in, but commented out (lines 182-188) in case others want to try using it. If you want to use this method instead, comment out line 171 first.
-
-- If you run this code until `fn` is empty, then try to reset `fn` with the same or new data, it can sometimes run into problems and may not read the new files correctly (it will say that `fn` is empty when it shouldn't be). If this happens, just clear the global environment and restart from the `RUN ONCE` section. It should work fine after that.
-
 ## How to use "Combine-Files.R"
 This code takes all of the individual CSV files created from the previous code and combines them into one long CSV files that can be used for further data analysis. Make sure that the only CSVs in this directory are the ones that need to be combined.
 
@@ -44,3 +39,13 @@ This code takes all of the individual CSV files created from the previous code a
 2. Set `fn` to the filename that you would like the output to be called. This has to start with a slash (/).
 
 3. Run the rest of the code, the output file will be created in the same file where the individual CSV files are.
+
+
+### Notes and plans for updates
+- A problem was found with the T50 portion of this code, results for it should not be used at this time. An updated version will be posted when the problem is fixed, as well as an updated note here in the README file.
+- UPDATE 6/13/25: T50 works on the code for good curves where Tmax is captured by the FluorCam and noise is limited, but should be verified before using in any analysis. Do not use the T50 values if there is noise around the 50% fluorescence mark or if Tmax is not captured.
+- UPDATE 7/2/25: Tested a T50 calculation method based on the regression line rather than finding the point closest to 50% fluorescence, which works well when the regression line fits closely with the data. It does not work well when the data is noisy in the fast-rise phase. This code was left in, but commented out (lines 182-188) in case others want to try using it. If you want to use this method instead, comment out line 171 first.
+
+- If you run this code until `fn` is empty, then try to reset `fn` with the same or new data, it can sometimes run into problems and may not read the new files correctly (it will say that `fn` is empty when it shouldn't be). If this happens, just clear the global environment and restart from the `RUN ONCE` section. It should work fine after that.
+- UPDATE 12/17/25: New Shiny app added! Main note added to the top of the README
+
