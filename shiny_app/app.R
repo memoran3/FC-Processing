@@ -96,16 +96,18 @@ ui <- fluidPage(
       numericInput("maxthreshold", "Max fluorescence threshold", value = 0.9,
                    step = 0.01), #moves at smaller increments
       
-      h4("4. Navigate Samples"),
+      h4("4. Save Results to Table"),
+      actionButton("save_btn", 
+                   HTML(paste0("Save T",tags$sub("crit"),"/T",tags$sub("50")," for this sample")), 
+                   class = "btn-primary"),
+      
+      hr(),
+      h4("5. Navigate Samples"),
       actionButton("prev_sample", "Previous Sample"), #generating UI buttons
       actionButton("next_sample", "Next Sample"),
       br(), br(), #used to create a line break
       uiOutput("sample_dropdown"),
-      
-      h4("5. Save Results to Table"),
-      actionButton("save_btn", 
-                   HTML(paste0("Save T",tags$sub("crit"),"/T",tags$sub("50")," for this sample")), 
-                   class = "btn-primary")
+
       ),
     
     mainPanel(
