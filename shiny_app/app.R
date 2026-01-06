@@ -60,11 +60,11 @@ condense <- function(rawFC){
     mod <- mod + 4
   }
   
-  # FC data, round to 3 sig figs
+  # FC data
   mod <- 0
   for(i in 2:ncol(rawFC)){
     for(j in 1:120){
-      newDF[j,i] <- round((sum(rawFC[j+mod + 0:4, i])/5), digits = 3)
+      newDF[j,i] <- sum(rawFC[j+mod + 0:4, i])/5
       mod <- mod + 4
     }
     mod <- 0
