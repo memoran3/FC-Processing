@@ -406,3 +406,7 @@ shinyApp(ui = ui, server = server)
 
 # Use this if you only want it to load in an external browser
 # shinyApp(ui = ui, server = server, options = list(launch.browser = TRUE)) 
+
+
+## Use the following code in the console to update the app 
+## rsconnect::deployApp(appName = "shiny_app", account = "memoran")

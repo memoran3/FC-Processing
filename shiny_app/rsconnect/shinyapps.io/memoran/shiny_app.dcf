@@ -5,6 +5,6 @@ account: memoran
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 16330273
-bundleId: 11339004
+bundleId: 11408535
 url: https://memoran.shinyapps.io/shiny_app/
 version: 1
