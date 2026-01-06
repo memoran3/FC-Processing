@@ -14,6 +14,7 @@ library(here)
 library(rlang)
 library(dplyr)
 library(rsconnect)
+library(DT)
 
 
 # CUSTOM FUNCTIONS --------------------------------------------------------
@@ -52,10 +53,18 @@ rename <- function(data, csv){
 condense <- function(rawFC){
   newDF <- data.frame(matrix(NA, (nrow(rawFC)/5), ncol(rawFC)))
   
+  # Isolating temp column, round to 2 sig figs
   mod <- 0
-  for(i in 1:ncol(rawFC)){
+  for(k in 1:120){
+    newDF[k,1] <- round((sum(rawFC[k+mod + 0:4, 1])/5), digits = 2)
+    mod <- mod + 4
+  }
+  
+  # FC data, round to 3 sig figs
+  mod <- 0
+  for(i in 2:ncol(rawFC)){
     for(j in 1:120){
-      newDF[j,i] <- sum(rawFC[j+mod + 0:4, i])/5
+      newDF[j,i] <- round((sum(rawFC[j+mod + 0:4, i])/5), digits = 3)
       mod <- mod + 4
     }
     mod <- 0
@@ -91,31 +100,39 @@ ui <- fluidPage(
         accept = ".csv"),
       
       h4("3. Modify Parameters"),
-      numericInput("xlow", "Lower temperature limit (xlow)", value =  30), #defining numeric inputs 
-      numericInput("xhigh", "Upper temperature limit (xhigh)", value = 60),
-      numericInput("maxthreshold", "Max fluorescence threshold", value = 0.9,
-                   step = 0.01), #moves at smaller increments
+      numericInput(inputId = "xlow", 
+                   label = "Lower temperature limit (xlow)", 
+                   value =  30), #defining numeric inputs 
+      numericInput(inputId = "xhigh", 
+                   label = "Upper temperature limit (xhigh)", 
+                   value = 60),
+      numericInput(inputId = "maxthreshold", 
+                   label = "Max fluorescence threshold", 
+                   value = 0.9,
+                   step = 0.05), #moves at smaller increments
       
       h4("4. Save Results to Table"),
-      actionButton("save_btn", 
-                   HTML(paste0("Save T",tags$sub("crit"),"/T",tags$sub("50")," for this sample")), 
+      actionButton(inputId = "save_btn", 
+                   label = HTML(paste0("Save T",tags$sub("crit"),"/T",tags$sub("50")," for this sample")), 
                    class = "btn-primary"),
       
       hr(),
       h4("5. Navigate Samples"),
-      actionButton("prev_sample", "Previous Sample"), #generating UI buttons
-      actionButton("next_sample", "Next Sample"),
+      actionButton(inputId = "prev_sample", label = "Previous Sample"), #generating UI buttons
+      actionButton(inputId = "next_sample", label = "Next Sample"),
       br(), br(), #used to create a line break
       uiOutput("sample_dropdown"),
 
       ),
     
     mainPanel(
-      plotOutput("fluorPlot", height = "500px"),
+      plotOutput(outputId = "fluorPlot", height = "500px"),
       hr(),
       h4("Results Table"),
-      tableOutput("results_table"),
-      downloadButton("download_csv", "Download All Results as .CSV")
+      div(style = "display: flex; gap: 10px; align-items: center; margin-bottom: 10px;",
+          actionButton("delete_btn", "Delete Sample", class = "btn-danger"),
+          downloadButton("download_csv", "Download all results as CSV")),
+      DTOutput("results_table")
     )
   )
 )
@@ -175,14 +192,28 @@ server <- function(input, output, session){
   # navigating to previous sample
   observeEvent(input$prev_sample, {
     idx <- sample_index()
-    if(idx > 2) sample_index(idx - 1) #prevents going past first sample column
+    if(idx > 2) {
+      sample_index(idx - 1) #prevents going past first sample column
+      
+      # reset parameter defaults
+      updateNumericInput(session, "xlow", value = 30)
+      updateNumericInput(session, "xhigh", value = 60)
+      updateNumericInput(session, "maxthreshold", value = 0.9)
+    }
   })
   
   # navigating to next sample
   observeEvent(input$next_sample, {
     idx <- sample_index()
     max_sample <- ncol(processed())
-    if(idx < max_sample) sample_index(idx + 1) #prevents going past the last sample 
+    if(idx < max_sample) {
+      sample_index(idx + 1) #prevents going past the last sample 
+      
+      # reset parameter defaults
+      updateNumericInput(session, "xlow", value = 30)
+      updateNumericInput(session, "xhigh", value = 60)
+      updateNumericInput(session, "maxthreshold", value = 0.9)
+    }
   })
   
   # dropdown to choose sample directly
@@ -192,8 +223,9 @@ server <- function(input, output, session){
                 choices = colnames(processed())[2:ncol(processed())])
   })
   
+
   observeEvent(input$sample_select, {
-    idx <- which(colnames(processed()) == input$sample_select) #dropdown selection displays sample_index()
+    idx <- which(colnames(processed()) == input$sample_select) #drop-down selection displays sample_index()
     sample_index(idx)
   })
   
@@ -299,7 +331,7 @@ server <- function(input, output, session){
   })
   
 
-  # Saved results table -----------------------------------------------------
+  # Results table -------------------------------------------------
   
   # Store saved results
   saved_results <- reactiveVal(data.frame())
@@ -308,7 +340,6 @@ server <- function(input, output, session){
     df <- processed()
     idx <- sample_index()
     res <- calc_results()
-    
     new_row <- data.frame(
       File = input$chosen_file$name,
       Sample = colnames(df)[idx],
@@ -319,14 +350,46 @@ server <- function(input, output, session){
       xhigh = input$xhigh,
       maxthreshold = input$maxthreshold
     )
-    
     saved_results(rbind(saved_results(), new_row))
   })
   
   # Render table of saved results
-  output$results_table <- renderTable({
-    saved_results()
+  
+  # output$results_table <- renderTable({  # old code, keeping for reference
+  #   saved_results()
+  
+  output$results_table <- renderDT({
+    restab <- saved_results()
+    datatable(restab)
   })
+  
+  # Observer to handle deletes (step 1, before confirmation)
+  observeEvent(input$delete_btn, {
+    selection <- input$results_table_rows_selected
+    if(is.null(selection) || length(selection) == 0){
+      showNotification("No row selected to delete", type = "warning")
+      return()
+    }
+    
+    showModal(
+      modalDialog(title = "Confirm delete",
+                  "Are you sure you want to delete this sample?",
+                  footer = tagList(
+                    modalButton("Cancel"),
+                    actionButton("confirm_delete", "Delete", class = "btn-danger"))))
+    })
+  
+  # Observer to handle deletes (step 2, after confirmation)
+  observeEvent(input$confirm_delete, {
+    selection <- input$results_table_rows_selected
+    restab <- saved_results()
+    
+    # remove selected row
+    saved_results(restab[-selection, ,drop = F])
+    removeModal()
+    showNotification("Row deleted", type = "message")
+  })
+  
 
   # Download all results as CSV
   output$download_csv <- downloadHandler(
