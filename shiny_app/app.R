@@ -354,13 +354,9 @@ server <- function(input, output, session){
   })
   
   # Render table of saved results
-  
-  # output$results_table <- renderTable({  # old code, keeping for reference
-  #   saved_results()
-  
   output$results_table <- renderDT({
     restab <- saved_results()
-    datatable(restab)
+    datatable(restab, options = list(lengthMenu = c(50, 100)))
   })
   
   # Observer to handle deletes (step 1, before confirmation)
