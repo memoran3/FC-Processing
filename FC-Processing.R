@@ -86,7 +86,7 @@ csv          <- read.csv(paste0("./data_labels/",strsplit(fn[1], ".TXT"),".csv")
 # csv        <- 0  # use this line of code instead of the previous one if there's no label file
 
 # Raw kinetic data
-rawFC <- read.table(file = paste0("data_raw/",fn[1]), skip = 2, header = T, sep = "\t")
+rawFC <- read.table(file = paste0("data_raw/",fn[1]), skip = 2, header = T) # if errors occur, try adding fileEncoding = "latin1" after header
 rawFC <- rawFC[-1] # remove time stamp column
 colnames(rawFC)[1] <- "temp" # rename temperature column
 
