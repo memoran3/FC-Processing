@@ -80,6 +80,8 @@ UPDATE 11/15/25: Improved the segmented regression fit and added a visual overla
 
 UPDATE 1/6/26: Delete Sample button added. There was a rounding problem occurring with T50 and that has now been fixed as well. Parameters now restore to default settings after navigating to next/previous samples, but they still do not reset with the drop-down sample selection option. -MM
 
+UPDATE 1/29/26: The FluorCam often uses "Area #" as its default label for areas of interest, and spaces in the header of the .TXT files was causing errors. The app should now be able to handle spaces in the raw data and label files without any problems. -MM
+
 
 ## Run the application 
 `shinyApp(ui = ui, server = server)`
