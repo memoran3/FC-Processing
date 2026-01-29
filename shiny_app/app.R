@@ -160,9 +160,11 @@ server <- function(input, output, session){
     req(input$chosen_file)
 
     # Load the uploaded file
-    rawFC <- read_table( # switch from original read.table
+    rawFC <- read_delim( # switch from original read.table
       input$chosen_file$datapath,
-      skip = 2
+      skip = 2,
+      delim = "\t",
+      col_names = T
     )
     
     rawFC <- rawFC[-1]  # remove time column
