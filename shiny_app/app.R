@@ -164,7 +164,8 @@ server <- function(input, output, session){
       input$chosen_file$datapath,
       skip = 2,
       delim = "\t",
-      col_names = T
+      col_names = T,
+      locale = locale(encoding = "Latin1")
     )
     
     rawFC <- rawFC[-1]  # remove time column
