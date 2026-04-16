@@ -93,7 +93,6 @@ Using RStudio, you have the option of running the app within Rstudio or in an ex
 ## Acknowledgements
 
 I would like to thank Dr. Jessica Guo for her guidance throughout this semester and the duration of this project. I also would like to thank Madeline Moran for her time and for trusting me with her research. -AR
-Original README:
 - [FC-Processing.R](https://github.com/arowley04/FC-Processing/blob/main/README.md)
  
 
