@@ -1,7 +1,7 @@
 ##### Tcrit/50 Data Processing Shiny App #####
 ### Processing code originally sourced from file "FC-Processing.R"
 ### Shiny app originally created by Ana Rowley (uploaded on 11/22/25)
-### Shiny app last updated by Madeline Moran on 12/17/25
+### Shiny app last updated by Madeline Moran on 3/16/25
 
 
 
@@ -84,46 +84,87 @@ ui <- fluidPage(
   
   sidebarLayout(
     sidebarPanel(
-      
       style = "max-height: 90vh; overflow-y: scroll;", # sidebar scrolling
       
-      h4("1. Select Data File"), #h4 is used to generate a heading 4-style heading
-      fileInput(
-        inputId = "chosen_file", # FC raw data
-        label = "Upload a .TXT FluorCam file",
-        accept = ".TXT"),
-      
-      h4("2. Select Label File (Optional)"),
-      fileInput(
-        inputId = "label_file", # label csv
-        label = "Upload a .CSV label file",
-        accept = ".csv"),
-      
-      h4("3. Modify Parameters"),
-      numericInput(inputId = "xlow", 
-                   label = "Lower temperature limit (xlow)", 
-                   value =  30), #defining numeric inputs 
-      numericInput(inputId = "xhigh", 
-                   label = "Upper temperature limit (xhigh)", 
-                   value = 60),
-      numericInput(inputId = "maxthreshold", 
-                   label = "Max fluorescence threshold", 
-                   value = 0.9,
-                   step = 0.05), #moves at smaller increments
-      
-      h4("4. Save Results to Table"),
-      actionButton(inputId = "save_btn", 
-                   label = HTML(paste0("Save T",tags$sub("crit"),"/T",tags$sub("50")," for this sample")), 
-                   class = "btn-primary"),
-      
-      hr(),
-      h4("5. Navigate Samples"),
-      actionButton(inputId = "prev_sample", label = "Previous Sample"), #generating UI buttons
-      actionButton(inputId = "next_sample", label = "Next Sample"),
-      br(), br(), #used to create a line break
-      uiOutput("sample_dropdown"),
-
-      ),
+      tabsetPanel(
+        tabPanel("Data Processing",
+          
+          h4("1. Select Data File"), #h4 is used to generate a heading 4-style heading
+          fileInput(
+            inputId = "chosen_file", # FC raw data
+            label = "Upload a .TXT FluorCam file",
+            accept = ".TXT"),
+          
+          h4("2. Select Label File (Optional)"),
+          fileInput(
+            inputId = "label_file", # label csv
+            label = "Upload a .CSV label file",
+            accept = ".csv"),
+          
+          fluidRow(
+            column(width = 8,
+                   h4("3. Modify Parameters")),
+            column(width = 4,
+                   checkboxInput(inputId = "defaults",
+                                 label = "Reset?",
+                                 value = F))),
+          numericInput(inputId = "xlow", 
+                       label = "Lower temperature limit (xlow)", 
+                       value =  30), #defining numeric inputs 
+          numericInput(inputId = "xhigh", 
+                       label = "Upper temperature limit (xhigh)", 
+                       value = 60),
+          numericInput(inputId = "maxthreshold", 
+                       label = "Max fluorescence threshold", 
+                       value = 0.9,
+                       step = 0.05), #moves at smaller increments
+            
+          h4("4. Add Results to Table", style = "margin-top: 40px;"),
+          actionButton(inputId = "save_btn", 
+                       label = HTML(paste0("Save T",tags$sub("crit"),"/T",tags$sub("50")," for this sample")), # HTML makes subscripts work properly 
+                       class = "btn-primary"),
+          
+          hr(),
+          h4("5. Navigate Samples"),
+          actionButton(inputId = "prev_sample", 
+                       label = "Previous Sample"), #generating UI buttons
+          actionButton(inputId = "next_sample", 
+                       label = "Next Sample"),
+          br(), br(), #used to create a line break
+          uiOutput("sample_dropdown"),
+          
+        ),
+        tabPanel("Instructions",
+                 h3("Need help?"),
+                 helpText("This is a shortened version of the README on GitHub. Follow this link for more detailed information or examples of what the files should look like: "),
+                 a("GitHub Link", href = "https://github.com/memoran3/FC-Processing/tree/main/shiny_app"),
+                 
+                 h4("1. Select Data File", style = "margin-top: 30px;"),
+                 helpText("Upload a raw FluorCam data file (.txt) from your computer"),
+                 
+                 h4("2. Select Label File", style = "margin-top: 30px;"),
+                 helpText("This is an optional step. Upload a labels file (.csv) if you'd like to rename your samples"),
+                 
+                 h4("3. Modify Parameters", style = "margin-top: 30px;"),
+                 helpText("Modify your xlow, xhigh, and max threshold parameters to better trim your samples"),
+                 helpText("xlow and xhigh refer to the range of temperatures along the x axis. Max threshold refers to the % Maxmimum Fluorescence that's included in the breakpoint regression (represented by the blue dashed line)"),
+                 helpText("If you check the 'Reset?' box, each new sample will have the parameters reset to the defaults when you navigate to a new sample (xlow = 30 °C, xhigh = 60 °C, max threshold = 0.9)"),
+                 helpText("If the 'Reset?' box is unchecked, it will maintain the parameters you currently have set when you navigate to a new sample"),
+                 
+                 h4("4. Add Results to Table", style = "margin-top: 30px;"),
+                 helpText("Add your results from the Main Panel to the table that appears under the plot. This is only saving the data from the sample you are currently looking at"),
+                 
+                 h4("5. Navigate Samples", style = "margin-top: 30px;"),
+                 helpText("Click to navigate to the previous or next sample, or use the dropdown menu to select a specific sample"),
+                 helpText("Note: At the moment, the dropdown menu doesn't work properly but it will be fixed in a future update. You can use it on the default settings, but it doesn't work if you modify the parameters at this time"),
+                 
+                 h4("Finishing Up", style = "margin-top: 30px;"),
+                 helpText("In the Results Table (below the plot in the main panel), the samples you added in step 4 will populate here"),
+                 helpText("You can click on one or multiple samples to delete them if necessary. The row will be highlighted in blue if they are actively selected"),
+                 helpText("When you are finished adding data to this table, click 'Download all results as a CSV' and your file will be saved. At this time the CSV automatically downloads with a similar name as the file that's currently showing in step 1, even if you processed multiple files at one time")
+        )
+      )
+    ),
     
     mainPanel(
       plotOutput(outputId = "fluorPlot", height = "500px"),
@@ -145,7 +186,7 @@ server <- function(input, output, session){
   
   # Condense and rename raw FC data -------------------------------------
   
-  # Load labels from project root
+  # Load label CSV and handling empty input
   labels <- reactive({
     if(is.null(input$label_file) || is.null(input$label_file$datapath)){
       return(NULL)
@@ -191,6 +232,7 @@ server <- function(input, output, session){
 
     # Track current sample
   sample_index <- reactiveVal(2) #start at sample column 2 (column 1 - temperature)
+  # this is making sample_index a reactive expression that will be updated through navigation
   
   # navigating to previous sample
   observeEvent(input$prev_sample, {
@@ -198,10 +240,13 @@ server <- function(input, output, session){
     if(idx > 2) {
       sample_index(idx - 1) #prevents going past first sample column
       
+      
       # reset parameter defaults
-      updateNumericInput(session, "xlow", value = 30)
-      updateNumericInput(session, "xhigh", value = 60)
-      updateNumericInput(session, "maxthreshold", value = 0.9)
+      if(input$defaults == T){
+        updateNumericInput(session, "xlow", value = 30)
+        updateNumericInput(session, "xhigh", value = 60)
+        updateNumericInput(session, "maxthreshold", value = 0.9)
+      }
     }
   })
   
@@ -209,13 +254,15 @@ server <- function(input, output, session){
   observeEvent(input$next_sample, {
     idx <- sample_index()
     max_sample <- ncol(processed())
-    if(idx < max_sample) {
-      sample_index(idx + 1) #prevents going past the last sample 
+    if(idx < max_sample) { #prevents going past the last sample 
+      sample_index(idx + 1) 
       
       # reset parameter defaults
-      updateNumericInput(session, "xlow", value = 30)
-      updateNumericInput(session, "xhigh", value = 60)
-      updateNumericInput(session, "maxthreshold", value = 0.9)
+      if(input$defaults == T){
+        updateNumericInput(session, "xlow", value = 30)
+        updateNumericInput(session, "xhigh", value = 60)
+        updateNumericInput(session, "maxthreshold", value = 0.9)
+      }
     }
   })
   
@@ -228,8 +275,12 @@ server <- function(input, output, session){
   
 
   observeEvent(input$sample_select, {
-    idx <- which(colnames(processed()) == input$sample_select) #drop-down selection displays sample_index()
+    idx <- which(colnames(processed()) == input$sample_select) # drop-down selection displays sample_index()
     sample_index(idx)
+    #### PROBLEM THAT'S HAPPENING: sample_index is reverting to 2 whenever the parameters are changed on a dropdown selected sample
+    #### It doesn't change from 2 if you specify the default as a different number
+    #### It doesn't happen with the buttons, but is happening here for some reason
+    #### Might have to do with line 250
   })
   
   
