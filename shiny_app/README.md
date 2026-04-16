@@ -2,8 +2,8 @@
 # Processing Fluorcam data for Tcrit and T50 ShinyApp 
 ### Originally from “FC-Processing.R”
 
-### Written by Ana Rowley
-#### Last updated January 6, 2026 by Madeline Moran
+### Written by Ana Rowley and Madeline Moran
+#### Last updated April 16, 2026 by Madeline Moran
 
 ## Background
 
@@ -60,11 +60,12 @@ A plot should now be loaded in the main panel that shows the cleaned up raw data
 
 3. Modify the parameters if needed. Generally modifying xhigh and/or maxthreshold are best for fine-tuning the regression line. It's recommended to manually type your modifications instead of using the arrows. If you use the scrolling arrows, the plot will update through each step and will take much longer than if you just manually type new values. 
 
-4. Save the results of this one sample to the Results Table (blue button), which will populate below the plot in the main panel. This table will save the file name, sample name, Tcrit, Tcrit standard error, T50, and final parameter values (xlow, xhigh, maxthreshold). Each new sample will be given its own row in the Results table. If you wish to delete a row from the Results Table, you can select one row at a time and delete it using the red Delete Sample button.
+4. Add the results of this one sample to the Results Table (blue button), which will populate below the plot in the main panel. This table will save the file name, sample name, Tcrit, Tcrit standard error, T50, and final parameter values (xlow, xhigh, maxthreshold). Each new sample will be given its own row in the Results table. If you wish to delete a row from the Results Table, you can select one row at a time and delete it using the red Delete Sample button.
 
-5. Navigate samples which you can do by clicking Previous Sample or Next sample, or you can use the dropdown menu to select one specific sample. At this time, the parameters will automatically reset to 30 (xlow), 60 (xhigh), and 0.9 (maxthreshold) when using the Next Sample and Previous Sample buttons, but they will not reset if you choose a sample from the drop-down menu.
+5. Navigate samples which you can do by clicking Previous Sample or Next sample, or you can use the dropdown menu to select one specific sample. If the Reset? box is checked, the parameters will automatically reset to 30 (xlow), 60 (xhigh), and 0.9 (maxthreshold) when using the Next Sample and Previous Sample buttons. If the Reset? box is not checked, the parameters that you currently have will carry over to the next or previous sample.
+Note: At this time, the drop down menu works with the default parameters, but will skip back to the first sample if you modify the parameters and then choose a new sample. That will be fixed in a future update
 
-6. When you have completed your processing, you can save the entire Results Table by clicking the `Download All Results as CSV` button.
+6. When you have completed your processing, you can save the entire Results Table by clicking the `Download All Results as CSV` button. You can also select individual or groups of samples from the Results Table and delete them if need be. The rows will be highlighted blue if they are selected before deletion.
 
 7. If you wish to save a plot image, you can do so by right clicking on the image and Save Image As... If you wish to modify the color scheme or point characters, you can do so in the `app.R` file and run the app locally.
 
@@ -82,6 +83,8 @@ UPDATE 1/6/26: Delete Sample button added. There was a rounding problem occurrin
 
 UPDATE 1/29/26: The FluorCam often uses "Area #" as its default label for areas of interest, and spaces in the header of the .TXT files was causing errors. The app should now be able to handle spaces in the raw data and label files without any problems. -MM
 
+UPDATE 4/16/26: An option to reset the parameters to their default settings is available now, so they don't always reset when going to the next or previous sample. An instructions tab has also been added to the app so that the instructions are more easily accessible when just using the app. -MM
+
 
 ## Run the application 
 `shinyApp(ui = ui, server = server)`
@@ -89,8 +92,8 @@ Using RStudio, you have the option of running the app within Rstudio or in an ex
 
 ## Acknowledgements
 
-I would like to thank Dr. Jessica Guo for her guidance throughout this semester and the duration of this project. I also would like to thank Madeline Moran for her time and for trusting me with her research.
-
+I would like to thank Dr. Jessica Guo for her guidance throughout this semester and the duration of this project. I also would like to thank Madeline Moran for her time and for trusting me with her research. -AR
+Original README:
 - [FC-Processing.R](https://github.com/arowley04/FC-Processing/blob/main/README.md)
  
 
